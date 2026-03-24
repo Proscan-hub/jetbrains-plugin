@@ -1,0 +1,63 @@
+<idea-plugin>
+    <id>com.proscan.security</id>
+    <name>ProScan Security Scanner</name>
+    <version>1.0.0</version>
+    <vendor email="contact@proscan.one" url="https://proscan.one">ProScan</vendor>
+    <description><![CDATA[
+        Real-time SAST, SCA, and secrets scanning for JetBrains IDEs.
+        Integrates with the ProScan security analysis server for comprehensive
+        vulnerability detection with inline annotations and a dedicated tool window.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- External annotator for inline findings -->
+        <externalAnnotator language=""
+                           implementationClass="com.proscan.ProScanAnnotator"/>
+
+        <!-- Tool window -->
+        <toolWindow id="ProScan"
+                    anchor="bottom"
+                    factoryClass="com.proscan.ProScanToolWindowFactory"
+                    icon="/icons/proscan.svg"/>
+
+        <!-- Notification group -->
+        <notificationGroup id="ProScan"
+                           displayType="BALLOON"
+                           isLogByDefault="true"/>
+
+        <!-- Settings -->
+        <applicationService serviceImplementation="com.proscan.ProScanSettingsService"/>
+        <projectService serviceImplementation="com.proscan.ProScanFindingsCache"/>
+
+        <!-- Status bar widget -->
+        <statusBarWidgetFactory id="ProScan.StatusBar"
+                               implementation="com.proscan.ProScanStatusBarWidgetFactory"/>
+
+        <!-- Auto-login on activation when tokens exist -->
+        <postStartupActivity implementation="com.proscan.ProScanStartupActivity"/>
+    </extensions>
+
+    <actions>
+        <group id="ProScan.Menu" text="ProScan" description="ProScan Security Actions">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <action id="ProScan.ScanProject"
+                    class="com.proscan.ScanProjectAction"
+                    text="Scan Project"
+                    description="Run ProScan security scan on the entire project"/>
+            <action id="ProScan.ScanFile"
+                    class="com.proscan.ScanFileAction"
+                    text="Scan Current File"
+                    description="Run ProScan security scan on the current file"/>
+            <action id="ProScan.LoginWithSSO"
+                    class="com.proscan.LoginWithSSOAction"
+                    text="Sign in with SSO"
+                    description="Sign in to ProScan via OAuth2/OIDC SSO"/>
+            <action id="ProScan.Logout"
+                    class="com.proscan.LogoutAction"
+                    text="Sign Out"
+                    description="Sign out from ProScan"/>
+        </group>
+    </actions>
+</idea-plugin>
